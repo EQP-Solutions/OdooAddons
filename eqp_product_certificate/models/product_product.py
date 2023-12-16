@@ -11,7 +11,7 @@ class Product(models.Model):
                                                compute='_compute_product_certificate_count')
 
     def action_view_certificates(self):
-        action = self.env["ir.actions.actions"]._for_xml_id("product_certificate.action_product_certificate")
+        action = self.env["ir.actions.actions"]._for_xml_id("eqp_product_certificate.action_product_certificate")
         action['domain'] = [('product_id', 'in', self.ids)]
         action['views'] = [(False, 'tree'), (False, 'form')]
         action['context'] = {

@@ -29,7 +29,7 @@
     ],
     'assets': {
         'web.assets_backend': [
-            'product_certificate/static/src/**/*',
+            'eqp_product_certificate/static/src/**/*',
         ],
     },
     'demo': [],
