@@ -15,6 +15,9 @@ Developer: (V17) Esteban Q P , Contact: info@eqpsolutions.com
 General Public License, Version 3 (LGPL v3).
 [GNU Lesser General Public License, Version 3](http://www.gnu.org/licenses/lgpl-3.0-standalone.html)
 
+## Documentation
+- EQP Product Certificate Official Documentation: [Document Page](https://eqpsolutions.com/blog/odoo-modules-documentation-1/product-certificates-module-1)
+
 ## Contacts
 - Website: [Form Link](https://eqpsolutions.com/contactus)
 - E-mail: [info@eqpsolutions.com](mailto:info@eqpsolutions.com)

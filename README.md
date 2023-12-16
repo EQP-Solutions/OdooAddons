@@ -13,6 +13,9 @@ The Product Certificate module is a comprehensive solution for managing and trac
 Odoo ERP system. It provides a robust set of features to streamline the creation, classification, and tracking of
 product certificates, ensuring compliance and organization.
 
+## Documentation
+- Official Documentation: [Documentation Page](https://eqpsolutions.com/blog/odoo-modules-documentation-1)
+
 ## Contacts
 - Website: [Form Link](https://eqpsolutions.com/contactus)
 - E-mail: [info@eqpsolutions.com](mailto:info@eqpsolutions.com)
