@@ -9,6 +9,7 @@
     'version': '17.0.1.0',
     'category': 'Inventory',
     'license': 'LGPL-3',
+    'images': ['static/description/eqp_product_certificates.gif'],
     'author': 'EQP Solutions',
     'website': 'https://www.eqpsolutions.com/',
     'contributors': [
