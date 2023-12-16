@@ -107,7 +107,7 @@
         <menuitem id="menu_pivot_product_certificate" sequence="300" name="Product Certificates"
                   parent="stock.menu_warehouse_report"
                   action="action_product_certificate_report"
-                  groups="product_certificate.group_product_certificate_user"/>
+                  groups="eqp_product_certificate.group_product_certificate_user"/>
 
     </data>
 </odoo>

@@ -111,7 +111,7 @@
                                 <div class="oe_kanban_footer">
                                     <div class="o_kanban_record_bottom">
                                         <div class="oe_kanban_bottom_left">
-                                            <field name="priority" widget="priority" groups="product_certificate.group_product_certificate_user"/>
+                                            <field name="priority" widget="priority" groups="eqp_product_certificate.group_product_certificate_user"/>
                                             <field name="activity_ids" widget="kanban_activity"/>
                                         </div>
                                         <div class="oe_kanban_bottom_right">
@@ -140,7 +140,7 @@
                     <field name="expiration_date" optional="show"/>
                     <field name="tag_ids" optional="show" widget="many2many_tags" options="{'color_field': 'color'}"/>
                     <field name="traffic_light" optional="show" widget="color"/>
-                    <field name="priority" widget="priority" groups="product_certificate.group_product_certificate_user"/>
+                    <field name="priority" widget="priority" groups="eqp_product_certificate.group_product_certificate_user"/>
                     <field name="stage_id" optional="show"/>
                     <field name="state" optional="show" widget="statusbar"/>
                     <field name="can_edit" invisible="1"/>
@@ -161,12 +161,12 @@
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button class="oe_stat_button" name="certificate_can_edit_control"
-                                    groups="product_certificate.group_product_certificate_admin"
+                                    groups="eqp_product_certificate.group_product_certificate_admin"
                                     type="object" icon="fa-lock" invisible="can_edit" string="Locked"
                                     help="Press to Unlock Certificate">
                             </button>
                             <button class="oe_stat_button" name="certificate_can_edit_control"
-                                    groups="product_certificate.group_product_certificate_admin"
+                                    groups="eqp_product_certificate.group_product_certificate_admin"
                                     type="object" icon="fa-unlock" invisible="not can_edit" string="Unlocked"
                                     help="Press to Lock Certificate">
                             </button>
@@ -185,7 +185,7 @@
                                        options="{'color_field': 'color', 'no_create':True, 'no_create_edit': True, 'no_open': True}"
                                        style="display: inline;" readonly="not can_edit"/>
                                 <field name="stage_id" required="stage_required" readonly="not can_edit" options="{'no_create': True, 'no_create_edit': True}"/>
-                                <field name="priority" widget="priority" groups="product_certificate.group_product_certificate_user"/>
+                                <field name="priority" widget="priority" groups="eqp_product_certificate.group_product_certificate_user"/>
                             </group>
                             <group>
                                 <field name="traffic_light" widget="color"
@@ -259,7 +259,7 @@
 
         <!-- Menu Items -->
         <menuitem id="menu_product_certificate" name="Product Certificates" parent="stock.menu_stock_root"
-                  action="action_product_certificate" groups="product_certificate.group_product_certificate_user"/>
+                  action="action_product_certificate" groups="eqp_product_certificate.group_product_certificate_user"/>
 
     </data>
 </odoo>

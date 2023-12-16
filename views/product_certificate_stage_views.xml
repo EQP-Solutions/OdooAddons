@@ -66,10 +66,10 @@
 
         <!-- Menu Items -->
         <menuitem id="menu_product_certificate_config" name="Product Certificates Config"
-                  parent="stock.menu_stock_config_settings" groups="product_certificate.group_product_certificate_admin" sequence="10"/>
+                  parent="stock.menu_stock_config_settings" groups="eqp_product_certificate.group_product_certificate_admin" sequence="10"/>
 
-        <menuitem id="menu_product_certificate_stage" name="Stages" parent="product_certificate.menu_product_certificate_config"
-                  action="action_product_certificate_stage" groups="product_certificate.group_product_certificate_admin" sequence="1"/>
+        <menuitem id="menu_product_certificate_stage" name="Stages" parent="eqp_product_certificate.menu_product_certificate_config"
+                  action="action_product_certificate_stage" groups="eqp_product_certificate.group_product_certificate_admin" sequence="1"/>
 
     </data>
 </odoo>

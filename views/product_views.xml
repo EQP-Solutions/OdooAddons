@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <div name="button_box" position="inside">
                 <button class="oe_stat_button" name="action_view_certificates"
-                        groups="product_certificate.group_product_certificate_user"
+                        groups="eqp_product_certificate.group_product_certificate_user"
                         type="object" icon="fa-certificate" invisible="not product_certificate_count"
                         help="Product Certificates">
                     <div class="o_field_widget o_stat_info">

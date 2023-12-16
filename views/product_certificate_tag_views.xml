@@ -61,8 +61,8 @@
         </record>
 
         <!-- Menu Items -->
-        <menuitem id="menu_product_certificate_tag" name="Tags" parent="product_certificate.menu_product_certificate_config"
-                  action="action_product_certificate_tag" groups="product_certificate.group_product_certificate_admin" sequence="2"/>
+        <menuitem id="menu_product_certificate_tag" name="Tags" parent="eqp_product_certificate.menu_product_certificate_config"
+                  action="action_product_certificate_tag" groups="eqp_product_certificate.group_product_certificate_admin" sequence="2"/>
 
 
     </data>
