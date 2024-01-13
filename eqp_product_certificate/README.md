@@ -16,7 +16,7 @@ General Public License, Version 3 (LGPL v3).
 [GNU Lesser General Public License, Version 3](http://www.gnu.org/licenses/lgpl-3.0-standalone.html)
 
 ## Documentation
-- EQP Product Certificate Official Documentation: [Document Page](https://eqpsolutions.com/blog/odoo-modules-documentation-1/product-certificates-module-1)
+- EQP Product Certificate Official Documentation: [Document Page](https://eqpsolutions.com/blog/odoo-modules-1/product-certificates-1)
 
 ## Contacts
 - Website: [Form Link](https://eqpsolutions.com/contactus)
@@ -32,7 +32,7 @@ Bugs are monitored on GitHub Issues. If you encounter any issues, please check i
 
 This module is maintained by EQP Solutions.
 
-For support and more information, please visit [Our Website](https://eqpsolutions.com/)
+For support and more information, please visit [Our Website](https://eqpsolutions.com/odoo)
 
 ## Further Information
 - HTML Description: [Static Description](<static/description/index.html>)
