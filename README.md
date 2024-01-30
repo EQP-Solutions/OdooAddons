@@ -14,7 +14,7 @@ Odoo ERP system. It provides a robust set of features to streamline the creation
 product certificates, ensuring compliance and organization.
 
 ## Documentation
-- Official Documentation: [Documentation Page](https://eqpsolutions.com/blog/odoo-modules-1/automatic-backups-7)
+- Official Documentation: [Documentation Page](https://eqpsolutions.com/blog/odoo-modules-1)
 
 ## Contacts
 - Website: [Form Link](https://eqpsolutions.com/contactus)
