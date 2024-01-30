@@ -15,7 +15,7 @@ General Public License, Version 3 (LGPL v3).
 [GNU Lesser General Public License, Version 3](http://www.gnu.org/licenses/lgpl-3.0-standalone.html)
 
 ## Documentation
-- EQP EQP Automatic Backup Official Documentation: [Document Page](https://eqpsolutions.com/blog/odoo-modules-1/)
+- EQP EQP Automatic Backup Official Documentation: [Document Page](https://eqpsolutions.com/blog/odoo-modules-1/automatic-backups-7)
 
 ## Contacts
 - Website: [Form Link](https://eqpsolutions.com/contactus)
