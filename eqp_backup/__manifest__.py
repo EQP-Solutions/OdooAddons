@@ -1,5 +1,5 @@
 {
-    'name': 'Automatic Backups',
+    'name': 'Automatic Backup',
     'summary': 'Automates Odoo DB/filestore backups, allowing users to schedule and manage routine backups effortlessly.',
     'description': '''
         The EQP Automatic Backup module for Odoo 17 simplifies data protection by automating database and filestore 
