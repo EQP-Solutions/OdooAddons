@@ -343,7 +343,7 @@ class BackupRecord(models.Model):
 
             if result_type == 'success' and self.success_mail_send and self.success_mail_policy:
                 template = self.env.ref('eqp_backup.email_template_data_automatic_backup_success')
-            elif result_type == 'danger' and self.failure_mail_sendl and self.failure_mail_policy:
+            elif result_type == 'danger' and self.failure_mail_send and self.failure_mail_policy:
                 template = self.env.ref('eqp_backup.email_template_data_automatic_backup_failed')
             if template:
                 template.send_mail(record.id, force_send=True)
