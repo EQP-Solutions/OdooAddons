@@ -127,30 +127,36 @@ class BackupServer(models.Model):
     server_address = fields.Char(string='Address', tracking=True, help="Server Address")
     server_port = fields.Char(string='Port', tracking=True, size=5, help="Server Port")
     server_user = fields.Char(string='User', tracking=True, help="Server User")
-    server_password = fields.Char(string='Password', tracking=True, help="Server Password")
-    # GOOGLE DRIVE AND DROPBOX FIELDS
-    credentials_type = fields.Selection([('file', 'Upload Credentials File'), ('text', 'Enter Credentials Directly')],
-                                        string='Credentials Type', tracking=True,
-                                        help="Choose the type of input for save your Credentials:\n"
-                                             "- Upload Credentials File: Select and upload your service account key "
-                                             "file in .json format for G. Drive. Or .txt for Dropbox.\n"
-                                             "- Enter Credentials Directly: Manually type the credentials directly into"
-                                             " a text field, respecting the JSON structure format for G. Drive. "
-                                             "Or plain text for Dropbox ."
-                                        )
-    credentials_file = fields.Binary(string='Credentials File', attachment=True,
-                                     help='Upload your service account key file:\n'
-                                          '- .json extension for Google Drive.\n'
-                                          '- .txt extension for Dropbox')
-    credentials_file_name = fields.Char(string='Credentials File Name')
-    credentials_input = fields.Text(string='Credentials Input',
-                                    help='Enter your service account key directly:\n'
-                                         '- JSON format for Google Drive.\n'
-                                         '- Plain Text for Dropbox.')
+    server_password = fields.Char(string='Password', help="Server Password")
+    # GOOGLE DRIVE FIELDS
+    drive_credentials_type = fields.Selection(
+        [('file', 'Upload Credentials File'), ('text', 'Enter Credentials Directly')],
+        string='Credentials Type', tracking=True,
+        help="Choose the type of input for save your Credentials:\n"
+             "- Upload Credentials File: Select and upload your service account key "
+             "file in .json format for G. Drive. Or .txt for Dropbox.\n"
+             "- Enter Credentials Directly: Manually type the credentials directly into"
+             " a text field, respecting the JSON structure format for G. Drive. "
+             "Or plain text for Dropbox ."
+    )
+    drive_credentials_file = fields.Binary(string='Credentials File', attachment=True,
+                                           help='Upload your service account key file:\n'
+                                                '- .json extension for Google Drive.\n'
+                                                '- .txt extension for Dropbox')
+    drive_credentials_file_name = fields.Char(string='Credentials File Name')
+    drive_credentials_input = fields.Text(string='Credentials Input',
+                                          help='Enter your service account key directly:\n'
+                                               '- JSON format for Google Drive.\n'
+                                               '- Plain Text for Dropbox.')
+    # DROPBOX FIELDS
+    dropbox_app_key = fields.Char(string='App Key', help="Dropbox APP Key")
+    dropbox_app_secret = fields.Char(string='App Secret', help="Dropbox APP Secret")
+    dropbox_app_token = fields.Char(string='App Token', readonly=True, help="Dropbox APP Token")
+
     parent_folder = fields.Char(string='Parent Folder ID', tracking=True,
                                 help="Parent Folder ID.\n(to get this ID open the folder on Google Drive and copy it "
                                      "from the web URL)")
-
+    credentials_ok = fields.Boolean(string='Credentials Validation', compute='_compute_credentials_ok')
     record_ids = fields.One2many('backup.record', 'server_id', string='Related Records')
 
     _sql_constraints = [('name_unique',
@@ -179,12 +185,38 @@ class BackupServer(models.Model):
         default = dict(default or {}, name=new_name)
         return super(BackupServer, self).copy(default)
 
-    def _compute_credentials_file_name(self):
+    def _compute_drive_credentials_file_name(self):
         """
         Computes and sets the credential file name based on server details.
         """
         for server in self:
-            server.credentials_file_name = f'{server.id_client}_{server.edi_identification}.key'
+            server.drive_credentials_file_name = f'{server.id_client}_{server.edi_identification}.key'
+
+    @api.depends('backup_type', 'destination_path', 'server_address', 'server_user', 'server_port', 'server_password',
+                 'parent_folder', 'drive_credentials_type', 'drive_credentials_file', 'drive_credentials_input',
+                 'dropbox_app_key', 'dropbox_app_secret', 'dropbox_app_token')
+    def _compute_credentials_ok(self):
+        """
+            Computes the value of 'credentials_ok' field based on the backup type and associated credentials.
+        """
+        for server in self:
+
+            credentials_ok = False
+            backup_type = server.backup_type
+
+            if backup_type == 'local':
+                credentials_ok = True if server.destination_path else False
+            elif backup_type == 'sftp':
+                credentials_ok = (server.server_address and server.server_user and server.server_port
+                                  and server.server_password)
+            elif backup_type == 'drive':
+                credentials_ok = server.parent_folder and (
+                        server.drive_credentials_type == 'file' and server.drive_credentials_file) or (
+                                         server.drive_credentials_type == 'text' and server.drive_credentials_input)
+            elif backup_type == 'dropbox':
+                credentials_ok = server.dropbox_app_key and server.dropbox_app_secret and server.dropbox_app_token
+
+            server.credentials_ok = credentials_ok
 
     def revert_state(self):
         """
@@ -235,6 +267,39 @@ class BackupServer(models.Model):
             if records:
                 records.update_cron_state(True)
                 records.write({'state': 'confirmed'})
+
+    def generate_dropbox_token(self):
+        """
+            Generates a Dropbox token using the provided credentials.
+
+            Returns:
+                dict: Action dictionary to open the Dropbox Token Assignment wizard.
+
+            Raises:
+                ValidationError: If the credentials are missing or if an error occurs during token generation.
+        """
+        self.ensure_one()
+        dropbox_app_key = self.dropbox_app_key
+        dropbox_app_secret = self.dropbox_app_secret
+        if not dropbox_app_key or not dropbox_app_secret:
+            raise ValidationError('Error: Missing credentials. Please ensure that all the following credentials are '
+                                  'set: APP Key, Secret, and Token.')
+        else:
+            try:
+                dbx_auth = dropbox.oauth.DropboxOAuth2FlowNoRedirect(dropbox_app_key, dropbox_app_secret,
+                                                                     token_access_type='offline')
+                dbx_auth_url = dbx_auth.start()
+            except Exception as e:
+                raise ValidationError(f'Error: {e}.')
+
+            return {
+                'type': 'ir.actions.act_window',
+                'name': 'Dropbox Token Assignment',
+                'res_model': 'backup.dropbox.token.assignment.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {'default_dropbox_auth_url': dbx_auth_url, 'default_server_id': self.id}
+            }
 
     def establish_sftp_connection(self):
         """
@@ -308,40 +373,39 @@ class BackupServer(models.Model):
         if backup_type not in ('drive', 'dropbox'):
             raise ValidationError('Error, Invalid backup type specified.')
 
-        # File Upload
-        if self.credentials_type == 'file':
-            creds_file = self.credentials_file
-            if creds_file:
-                credentials_content = base64.b64decode(creds_file)
-                if backup_type == 'drive':
+        # If Google Drive Backup Type
+        if backup_type == 'drive':
+            # File Upload
+            if self.drive_credentials_type == 'file':
+                creds_file = self.drive_credentials_file
+                if creds_file:
+                    credentials_content = base64.b64decode(creds_file)
                     credentials_data = get_credentials_data(credentials_content)
                 else:
-                    credentials_data = credentials_content.decode('utf-8')
-            else:
-                raise ValidationError('Error, No credentials file uploaded')
-
-        # Text Input
-        elif self.credentials_type == 'text':
-            creds_input = self.credentials_input
-            if creds_input:
-                if backup_type == 'drive':
+                    raise ValidationError('Error, No credentials file uploaded')
+            # Text Input
+            elif self.drive_credentials_type == 'text':
+                creds_input = self.drive_credentials_input
+                if creds_input:
                     credentials_data = get_credentials_data(creds_input)
                 else:
-                    credentials_data = creds_input
+                    raise ValidationError('Error, No valid or empty credentials text input')
+        else:
+            if self.dropbox_app_key and self.dropbox_app_secret and self.dropbox_app_token:
+                credentials_data = (self.dropbox_app_key, self.dropbox_app_secret, self.dropbox_app_token)
             else:
-                raise ValidationError('Error, No valid or empty credentials text input')
-
-        # Get credentials data
-        if credentials_data:
+                raise ValidationError('Error: Missing or empty credentials. Please ensure that all the following '
+                                      'credentials are set: APP Key, Secret, and Token.')
+        # Get Service
+        try:
             if backup_type == 'drive':
                 creds = service_account.Credentials.from_service_account_info(credentials_data, scopes=SCOPES)
                 service = build('drive', 'v3', credentials=creds)
             else:
-                # Removing both newlines and tabs (just to make sure the token will be clean).
-                creds = credentials_data.replace('\n', '').replace('\t', '')
-                service = dropbox.Dropbox(creds)
-        else:
-            raise ValidationError('Error, No valid credentials content.')
+                service = dropbox.Dropbox(app_key=credentials_data[0], app_secret=credentials_data[1],
+                                          oauth2_refresh_token=credentials_data[2])
+        except Exception as e:
+            raise ValidationError(f'Failed to initialize {backup_type} service. Error: {e}')
 
         return service
 
@@ -553,12 +617,12 @@ class BackupServer(models.Model):
 
                 # Provide a successful test result values
                 result_type = 'success'
-                result_msg = f"The Google Drive test file transference was successful.\nThe file ID is: {file.id}"
+                result_msg = f"The Dropbox test file transference was successful.\nThe file ID is: {file.id}"
                 _logger.info(result_msg)
 
             except Exception as e:
                 result_type = 'danger'
-                result_msg = f'Error transferring file to Google Drive: {e}'
+                result_msg = f'Error transferring file to Dropbox: {e}'
                 _logger.error(result_msg)
 
         # Provide feedback

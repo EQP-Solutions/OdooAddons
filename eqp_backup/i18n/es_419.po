@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-28 04:19+0000\n"
-"PO-Revision-Date: 2024-01-28 04:19+0000\n"
+"POT-Creation-Date: 2024-02-09 02:44+0000\n"
+"PO-Revision-Date: 2024-02-09 02:44+0000\n"
 "Last-Translator: Esteban Quevedo, 2024\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,6 +15,11 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Language: es_419\n"
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+
+#. module: eqp_backup
+#: model:ir.model.fields,help:eqp_backup.field_backup_record__last_execution_result
+msgid "Access the details of the most recent execution here."
+msgstr "Acceda aquí a los detalles de la ejecución más reciente."
 
 #. module: eqp_backup
 #. odoo-python
@@ -32,6 +37,24 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-info-circle\" style=\"color: blue;\"/>\n"
 "                                        Para aplicar cualquier modificación, por favor transicione el registro al estado 'Borrador'."
+
+#. module: eqp_backup
+#: model_terms:ir.ui.view,arch_db:eqp_backup.backup_dropbox_token_assignment_wizard_view_form
+msgid ""
+"<i class=\"fa fa-info-circle\" style=\"color: blue;\"/>\n"
+"                            Please use the URL provided above to complete the authorization steps. Once you reach the\n"
+"                            Access\n"
+"                            Code Generation step, copy the code and paste it into the Access Code field below this\n"
+"                            message.\n"
+"                            After entering the Access Code, please press the 'Set New Token' button to generate the\n"
+"                            token."
+msgstr ""
+"<i class=\"fa fa-info-circle\" style=\"color: blue;\"/>\n"
+"                            Por favor, utilice la URL proporcionada arriba para completar los pasos de autorización. Una vez que llegue al\n"
+"                            paso de generación del código de acceso, copie el código y péguelo en el campo de Código de Acceso debajo de este\n"
+"                            mensaje.\n"
+"                            Después de ingresar el Código de Acceso, por favor presione el botón 'Establecer Nuevo Token' para generar el\n"
+"                            token."
 
 #. module: eqp_backup
 #: model:mail.template,body_html:eqp_backup.email_template_data_automatic_backup_failed
@@ -69,6 +92,11 @@ msgid ""
 "                                        </li>\n"
 "                                    </ul>\n"
 "                                    has encountered a failure.\n"
+"                                    <br>\n"
+"                                    <br>\n"
+"                                    <strong>Error Details:</strong>\n"
+"                                    <br>\n"
+"                                    <t t-out=\"object.last_execution_result or ''\"></t>\n"
 "                                    <br>\n"
 "                                    <br>\n"
 "                                </div>\n"
@@ -149,6 +177,11 @@ msgstr ""
 "                                    ha encontrado un fallo.\n"
 "                                    <br>\n"
 "                                    <br>\n"
+"                                    <strong>Detalles del Error:</strong>\n"
+"                                    <br>\n"
+"                                    <t t-out=\"object.last_execution_result or ''\"></t>\n"
+"                                    <br>\n"
+"                                    <br>\n"
 "                                </div>\n"
 "                            </div>\n"
 "                            <div style=\"font-size: 13px; margin: 0px; padding: 0px;\">\n"
@@ -156,8 +189,8 @@ msgstr ""
 "                                <br>\n"
 "                                <br>\n"
 "                                <t t-if=\"object.user_id\">\n"
-"                                    <strong t-out=\"object.user_id.name or ''\">Mitchell Admin</strong>, está recibiendo\n"
-"                                    esta notificación porque se registró como el responsable de este\n"
+"                                    <strong t-out=\"object.user_id.name or ''\">Mitchell Admin</strong>, usted está recibiendo\n"
+"                                    esta notificación porque se registró como responsable de este\n"
 "                                    <strong>\n"
 "                                        <t t-out=\"object.name or ''\">Registro de BU 123</t>\n"
 "                                    </strong>\n"
@@ -314,6 +347,11 @@ msgid "A unique name per company."
 msgstr "Un nombre único por empresa."
 
 #. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_dropbox_token_assignment_wizard__dropbox_access_code
+msgid "Access Code"
+msgstr "Código de Acceso"
+
+#. module: eqp_backup
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_record__message_needaction
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_server__message_needaction
 msgid "Action Needed"
@@ -420,6 +458,21 @@ msgid "Admin"
 msgstr "Administrador"
 
 #. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__dropbox_app_key
+msgid "App Key"
+msgstr "Clave de la Aplicación"
+
+#. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__dropbox_app_secret
+msgid "App Secret"
+msgstr "Secreto de la Aplicación"
+
+#. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__dropbox_app_token
+msgid "App Token"
+msgstr "Token de la Aplicación"
+
+#. module: eqp_backup
 #: model:ir.model.fields.selection,name:eqp_backup.selection__backup_record__state__archived
 #: model:ir.model.fields.selection,name:eqp_backup.selection__backup_server__state__archived
 msgid "Archived"
@@ -440,6 +493,11 @@ msgstr "Conteo de archivos adjuntos"
 #: model_terms:ir.ui.view,arch_db:eqp_backup.backup_password_assignment_wizard_view_form
 msgid "Authenticate & Save"
 msgstr "Autenticar y Guardar"
+
+#. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_dropbox_token_assignment_wizard__dropbox_auth_url
+msgid "Authentication URL"
+msgstr "URL de Autenticación"
 
 #. module: eqp_backup
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_record__db_names
@@ -547,12 +605,13 @@ msgstr ""
 "correo electrónico adicionales para notificaciones si es necesario."
 
 #. module: eqp_backup
+#: model_terms:ir.ui.view,arch_db:eqp_backup.backup_dropbox_token_assignment_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:eqp_backup.backup_password_assignment_wizard_view_form
 msgid "Cancel"
 msgstr "Cancelar"
 
 #. module: eqp_backup
-#: model:ir.model.fields,help:eqp_backup.field_backup_server__credentials_type
+#: model:ir.model.fields,help:eqp_backup.field_backup_server__drive_credentials_type
 msgid ""
 "Choose the type of input for save your Credentials:\n"
 "- Upload Credentials File: Select and upload your service account key file in .json format for G. Drive. Or .txt for Dropbox.\n"
@@ -596,6 +655,7 @@ msgid "Confirmed"
 msgstr "Confirmado"
 
 #. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_dropbox_token_assignment_wizard__create_uid
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_password_assignment_wizard__create_uid
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_record__create_uid
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_server__create_uid
@@ -603,6 +663,7 @@ msgid "Created by"
 msgstr "Creado por"
 
 #. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_dropbox_token_assignment_wizard__create_date
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_password_assignment_wizard__create_date
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_record__create_date
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_server__create_date
@@ -610,24 +671,29 @@ msgid "Created on"
 msgstr "Creado el"
 
 #. module: eqp_backup
-#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__credentials_file
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__drive_credentials_file
 msgid "Credentials File"
 msgstr "Archivo de credenciales"
 
 #. module: eqp_backup
-#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__credentials_file_name
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__drive_credentials_file_name
 msgid "Credentials File Name"
 msgstr "Nombre de archivo de credenciales"
 
 #. module: eqp_backup
-#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__credentials_input
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__drive_credentials_input
 msgid "Credentials Input"
 msgstr "Entrada de credenciales"
 
 #. module: eqp_backup
-#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__credentials_type
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__drive_credentials_type
 msgid "Credentials Type"
-msgstr "Tipo de credenciales"
+msgstr "Tipo de Credenciales"
+
+#. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__credentials_ok
+msgid "Credentials Validation"
+msgstr "Validación de Credenciales"
 
 #. module: eqp_backup
 #: model_terms:ir.ui.view,arch_db:eqp_backup.res_config_settings_view_form
@@ -691,6 +757,7 @@ msgid "Destination Path"
 msgstr "Ruta de destino"
 
 #. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_dropbox_token_assignment_wizard__display_name
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_password_assignment_wizard__display_name
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_record__display_name
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_server__display_name
@@ -705,7 +772,28 @@ msgstr "Borrador"
 #. module: eqp_backup
 #: model:ir.model.fields.selection,name:eqp_backup.selection__backup_server__backup_type__dropbox
 msgid "Dropbox"
-msgstr "Dropbox"
+msgstr ""
+
+#. module: eqp_backup
+#: model:ir.model.fields,help:eqp_backup.field_backup_server__dropbox_app_key
+msgid "Dropbox APP Key"
+msgstr "Clave de APP de Dropbox"
+
+#. module: eqp_backup
+#: model:ir.model.fields,help:eqp_backup.field_backup_server__dropbox_app_secret
+msgid "Dropbox APP Secret"
+msgstr "Secreto de APP de Dropbox"
+
+#. module: eqp_backup
+#: model:ir.model.fields,help:eqp_backup.field_backup_server__dropbox_app_token
+msgid "Dropbox APP Token"
+msgstr "Token de APP de Dropbox"
+
+#. module: eqp_backup
+#: model:ir.model,name:eqp_backup.model_backup_dropbox_token_assignment_wizard
+#: model_terms:ir.ui.view,arch_db:eqp_backup.backup_dropbox_token_assignment_wizard_view_form
+msgid "Dropbox Token Assignment"
+msgstr "Asignación de Token de Dropbox"
 
 #. module: eqp_backup
 #: model:ir.model,name:eqp_backup.model_backup_record
@@ -759,12 +847,12 @@ msgid "Enable SFTP Server Backups."
 msgstr "Habilitar respaldos en servidor SFTP."
 
 #. module: eqp_backup
-#: model:ir.model.fields.selection,name:eqp_backup.selection__backup_server__credentials_type__text
+#: model:ir.model.fields.selection,name:eqp_backup.selection__backup_server__drive_credentials_type__text
 msgid "Enter Credentials Directly"
 msgstr "Ingresar credenciales directamente"
 
 #. module: eqp_backup
-#: model:ir.model.fields,help:eqp_backup.field_backup_server__credentials_input
+#: model:ir.model.fields,help:eqp_backup.field_backup_server__drive_credentials_input
 msgid ""
 "Enter your service account key directly:\n"
 "- JSON format for Google Drive.\n"
@@ -773,6 +861,11 @@ msgstr ""
 "Ingrese su clave de cuenta de servicio directamente:\n"
 "- Formato JSON para Google Drive.\n"
 "- Texto sin formato para Dropbox."
+
+#. module: eqp_backup
+#: model_terms:ir.ui.view,arch_db:eqp_backup.view_backup_record_form
+msgid "Execution Details"
+msgstr "Detalles de la Ejecución"
 
 #. module: eqp_backup
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_record__message_follower_ids
@@ -798,9 +891,14 @@ msgid "Frequency"
 msgstr "Frecuencia"
 
 #. module: eqp_backup
+#: model_terms:ir.ui.view,arch_db:eqp_backup.view_backup_server_form
+msgid "Generate Token"
+msgstr "Generar Token"
+
+#. module: eqp_backup
 #: model:ir.model.fields.selection,name:eqp_backup.selection__backup_server__backup_type__drive
 msgid "Google Drive"
-msgstr "Google Drive"
+msgstr ""
 
 #. module: eqp_backup
 #: model_terms:ir.ui.view,arch_db:eqp_backup.view_backup_record_search
@@ -820,11 +918,12 @@ msgid "Hourly"
 msgstr "Cada hora"
 
 #. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_dropbox_token_assignment_wizard__id
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_password_assignment_wizard__id
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_record__id
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_server__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: eqp_backup
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_record__activity_exception_icon
@@ -846,9 +945,7 @@ msgstr "Si está marcado, los nuevos mensajes requieren tu atención."
 
 #. module: eqp_backup
 #: model:ir.model.fields,help:eqp_backup.field_backup_record__message_has_error
-#: model:ir.model.fields,help:eqp_backup.field_backup_record__message_has_sms_error
 #: model:ir.model.fields,help:eqp_backup.field_backup_server__message_has_error
-#: model:ir.model.fields,help:eqp_backup.field_backup_server__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Si está marcado, algunos mensajes tienen un error de entrega."
 
@@ -865,6 +962,12 @@ msgid "Is Follower"
 msgstr "Es seguidor"
 
 #. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_record__last_execution_result
+msgid "Last Execution Result"
+msgstr "Último Resultado de la Ejecución"
+
+#. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_dropbox_token_assignment_wizard__write_uid
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_password_assignment_wizard__write_uid
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_record__write_uid
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_server__write_uid
@@ -872,6 +975,7 @@ msgid "Last Updated by"
 msgstr "Última actualización por"
 
 #. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_dropbox_token_assignment_wizard__write_date
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_password_assignment_wizard__write_date
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_record__write_date
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_server__write_date
@@ -881,7 +985,7 @@ msgstr "Última actualización el"
 #. module: eqp_backup
 #: model:ir.model.fields.selection,name:eqp_backup.selection__backup_server__backup_type__local
 msgid "Local"
-msgstr "Local"
+msgstr ""
 
 #. module: eqp_backup
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_password_assignment_wizard__backup_password
@@ -1011,6 +1115,25 @@ msgid "Paused"
 msgstr "Pausado"
 
 #. module: eqp_backup
+#: model:ir.model.fields,help:eqp_backup.field_backup_dropbox_token_assignment_wizard__dropbox_auth_url
+msgid ""
+"Please complete the authorization process by following the instructions "
+"provided at the following URL."
+msgstr ""
+"Por favor, complete el proceso de autorización siguiendo las instrucciones "
+"proporcionadas en la siguiente URL."
+
+#. module: eqp_backup
+#: model:ir.model.fields,help:eqp_backup.field_backup_dropbox_token_assignment_wizard__dropbox_access_code
+msgid ""
+"Please enter the access code received after completing the authorization "
+"process via the URL displayed at the top of this window."
+msgstr ""
+"Por favor, ingrese el código de acceso recibido después de completar el "
+"proceso de autorización a través de la URL mostrada en la parte superior de "
+"esta ventana."
+
+#. module: eqp_backup
 #: model:ir.model.fields,help:eqp_backup.field_backup_password_assignment_wizard__backup_password
 msgid ""
 "Please input the Master Password here for validation and secure storage."
@@ -1028,12 +1151,6 @@ msgid "Put the full backup destination path route."
 msgstr "Coloque la ruta completa de destino del respaldo."
 
 #. module: eqp_backup
-#: model:ir.model.fields,field_description:eqp_backup.field_backup_record__rating_ids
-#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__rating_ids
-msgid "Ratings"
-msgstr "Calificaciones"
-
-#. module: eqp_backup
 #: model:ir.model.fields,help:eqp_backup.field_backup_record__name
 #: model:ir.model.fields,help:eqp_backup.field_backup_server__name
 msgid "Record Name"
@@ -1046,9 +1163,19 @@ msgid "Records"
 msgstr "Registros de respaldo"
 
 #. module: eqp_backup
+#: model_terms:ir.ui.view,arch_db:eqp_backup.view_backup_server_form
+msgid "Refresh Token"
+msgstr "Actualización de Token"
+
+#. module: eqp_backup
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_server__record_ids
 msgid "Related Records"
 msgstr "Registros relacionados"
+
+#. module: eqp_backup
+#: model:ir.model.fields,field_description:eqp_backup.field_backup_dropbox_token_assignment_wizard__server_id
+msgid "Related Server"
+msgstr "Servidor Relacionado"
 
 #. module: eqp_backup
 #: model_terms:ir.ui.view,arch_db:eqp_backup.view_backup_record_search
@@ -1075,12 +1202,6 @@ msgstr "Ejecutar respaldo manualmente"
 #: model:ir.model.fields.selection,name:eqp_backup.selection__backup_server__backup_type__sftp
 msgid "SFTP"
 msgstr ""
-
-#. module: eqp_backup
-#: model:ir.model.fields,field_description:eqp_backup.field_backup_record__message_has_sms_error
-#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__message_has_sms_error
-msgid "SMS Delivery error"
-msgstr "Error en la entrega de SMS"
 
 #. module: eqp_backup
 #: model:ir.model.fields,field_description:eqp_backup.field_backup_record__cron_id
@@ -1174,6 +1295,11 @@ msgstr "Establecer Contraseña Maestra de Respaldo"
 #: model_terms:ir.ui.view,arch_db:eqp_backup.res_config_settings_view_form
 msgid "Set Database Master Password."
 msgstr "Establecer Contraseña Maestra de la Base de Datos."
+
+#. module: eqp_backup
+#: model_terms:ir.ui.view,arch_db:eqp_backup.backup_dropbox_token_assignment_wizard_view_form
+msgid "Set New Token"
+msgstr "Establecer Nuevo Token"
 
 #. module: eqp_backup
 #: model:ir.model.fields,help:eqp_backup.field_backup_record__active
@@ -1335,12 +1461,12 @@ msgid "Update Master Password"
 msgstr "Actualizar Contraseña Maestra"
 
 #. module: eqp_backup
-#: model:ir.model.fields.selection,name:eqp_backup.selection__backup_server__credentials_type__file
+#: model:ir.model.fields.selection,name:eqp_backup.selection__backup_server__drive_credentials_type__file
 msgid "Upload Credentials File"
 msgstr "Subir archivo de credenciales"
 
 #. module: eqp_backup
-#: model:ir.model.fields,help:eqp_backup.field_backup_server__credentials_file
+#: model:ir.model.fields,help:eqp_backup.field_backup_server__drive_credentials_file
 msgid ""
 "Upload your service account key file:\n"
 "- .json extension for Google Drive.\n"
@@ -1360,18 +1486,6 @@ msgstr "Usuario"
 #: model_terms:ir.ui.view,arch_db:eqp_backup.view_backup_record_form
 msgid "Validate Credentials"
 msgstr "Validar credenciales"
-
-#. module: eqp_backup
-#: model:ir.model.fields,field_description:eqp_backup.field_backup_record__website_message_ids
-#: model:ir.model.fields,field_description:eqp_backup.field_backup_server__website_message_ids
-msgid "Website Messages"
-msgstr "Mensajes del Sitio Web"
-
-#. module: eqp_backup
-#: model:ir.model.fields,help:eqp_backup.field_backup_record__website_message_ids
-#: model:ir.model.fields,help:eqp_backup.field_backup_server__website_message_ids
-msgid "Website communication history"
-msgstr "Historial de comunicación del sitio web"
 
 #. module: eqp_backup
 #: model:ir.model.fields.selection,name:eqp_backup.selection__backup_record__frequency__weeks

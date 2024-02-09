@@ -1,11 +1,11 @@
 /*
-   Styles for the '.master_password' class:
+   Styles for the '.password-limited' class:
    - Restricts the display to a single line, hiding any overflow.
    - Appends an ellipsis (...) to indicate truncated text.
    - Ensures the text does not wrap to the next line.
-   - Sets a maximum width of 150 pixels to limit the content area.
+   - Sets a maximum width of 200 pixels to limit the content area.
 */
-.master_password {
+.password-limited {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

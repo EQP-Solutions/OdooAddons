@@ -174,6 +174,9 @@ class BackupRecord(models.Model):
                               copy=False, help="Scheduled cron which ensures the automatic execution of backups at "
                                                "specific times.")
 
+    last_execution_result = fields.Text(string='Last Execution Result', readonly=True,
+                                        help='Access the details of the most recent execution here.')
+
     _sql_constraints = [('name_unique', 'unique(name, company_id)', 'A unique name per company.'),
                         ('unique_cron_id', 'UNIQUE(cron_id)', 'One Cron should only have one BackUp record.'),
                         ('check_backup_lifespan_qty', 'CHECK(backup_lifespan_qty = -1 OR backup_lifespan_qty > 1)',
@@ -560,8 +563,11 @@ class BackupRecord(models.Model):
                           f'unrecognized backup type.')
             _logger.error(result_msg)
 
-        # Show an alert window when manual execution
+        # Display an alert window for manual execution, or alternatively, send an email if applicable.
         if not self.env.context.get('manual_execution', False):
+            time = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+            record.last_execution_result = (f'RESULT TYPE: {result_type}\nDATE (yyyy-mm-dd hh:mm:ss): {time}\n'
+                                            f'DETAILS: {result_msg}')
             record.notify_result(result_type)
             return True
         else:
