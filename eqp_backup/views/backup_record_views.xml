@@ -104,7 +104,7 @@
                                             string="Update Data Bases List" icon="fa-refresh"/>
                                     <field name="db_names" readonly="1" nolabel="1" class="oe_inline" widget="text"/>
                                 </div>
-                                <field name="master_password" class="master_password" password="True" readonly="True"/>
+                                <field name="master_password" class="password-limited" password="True" readonly="True"/>
                                 <div colspan="2" invisible="state!='draft'">
                                     <button name="validate_db_credentials" type="object" class="btn-link oe_inline"
                                             string="Validate Credentials" icon="fa-key" colspan="2"/>
@@ -126,6 +126,12 @@
                             <page string="Scheduled Action" name="backup_scheduled_action" invisible="not cron_id">
                                 <group>
                                     <field name="cron_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                                </group>
+                            </page>
+                            <page string="Execution Details" name="backup_execution_details"
+                                  invisible="not last_execution_result">
+                                <group>
+                                    <field name="last_execution_result"/>
                                 </group>
                             </page>
                         </notebook>

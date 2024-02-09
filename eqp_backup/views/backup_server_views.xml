@@ -87,18 +87,33 @@
                                 <!-- Google Drive Field-->
                                 <field name="parent_folder" required="backup_type=='drive'" readonly="state!='draft'"
                                        invisible="backup_type!='drive'"/>
-                                <!-- Google Drive amd Dropbox Fields-->
-                                <field name="credentials_type" required="backup_type in ('drive', 'dropbox')"
-                                       readonly="state!='draft'"
-                                       invisible="backup_type not in ('drive', 'dropbox')"/>
-                                <field name="credentials_file" readonly="state!='draft'" widget="binary"
-                                       filename="credentials_file_name"
-                                       required="backup_type in ('drive', 'dropbox') and credentials_type=='file'"
-                                       invisible="backup_type not in ('drive', 'dropbox') or credentials_type!='file' or state!='draft'"/>
-                                <field name="credentials_file_name" invisible="True"/>
-                                <field name="credentials_input" widget="code" readonly="state!='draft'"
-                                       required="backup_type in ('drive', 'dropbox') and credentials_type=='text'"
-                                       invisible="backup_type not in ('drive', 'dropbox') or credentials_type!='text' or state!='draft'"/>
+                                <!-- Google Drive Fields-->
+                                <field name="drive_credentials_type" required="backup_type=='drive'"
+                                       readonly="state!='draft'" invisible="backup_type!='drive'"/>
+                                <field name="drive_credentials_file" readonly="state!='draft'" widget="binary"
+                                       filename="drive_credentials_file_name"
+                                       required="backup_type=='drive' and drive_credentials_type=='file'"
+                                       invisible="backup_type!='drive' or drive_credentials_type!='file' or state!='draft'"/>
+                                <field name="drive_credentials_file_name" invisible="True"/>
+                                <field name="drive_credentials_input" widget="code" readonly="state!='draft'"
+                                       required="backup_type=='drive' and drive_credentials_type=='text'"
+                                       invisible="backup_type!='drive' or drive_credentials_type!='text' or state!='draft'"/>
+                                <!-- Dropbox Fields-->
+                                <field name="dropbox_app_key" readonly="state!='draft'" password="True"
+                                       required="backup_type=='dropbox'" invisible="backup_type!='dropbox'"/>
+                                <field name="dropbox_app_secret" readonly="state!='draft'" password="True"
+                                       required="backup_type=='dropbox'" invisible="backup_type!='dropbox'"/>
+                                <field name="dropbox_app_token" class="password-limited" password="True"
+                                       invisible="backup_type!='dropbox'"/>
+                                <div colspan="2" invisible="not active or not backup_type">
+                                    <button name="generate_dropbox_token" type="object" class="btn-link oe_inline"
+                                            string="Generate Token" icon="fa-id-card-o"
+                                            invisible="backup_type!='dropbox' or not dropbox_app_key or not dropbox_app_secret or dropbox_app_token"/>
+                                    <button name="generate_dropbox_token" type="object" class="btn-link oe_inline"
+                                            string="Refresh Token" icon="fa-refresh"
+                                            invisible="backup_type!='dropbox' or not dropbox_app_key or not dropbox_app_secret or not dropbox_app_token"/>
+                                </div>
+
                                 <div class="oe_edit_only alert alert-info" role="alert" colspan="2"
                                      invisible="state=='draft'">
                                     <p>
@@ -106,8 +121,8 @@
                                         To apply any modifications, please transition the record to the 'Draft' state.
                                     </p>
                                 </div>
-
-                                <div colspan="2" invisible="not active or not backup_type">
+                                <field name="credentials_ok" invisible="1"/>
+                                <div colspan="2" invisible="not active or not backup_type or not credentials_ok">
                                     <h6>Testing Area</h6>
                                     <button name="test_connection" type="object" class="btn-link oe_inline"
                                             string="Test Connection" icon="fa-cloud" invisible="backup_type=='local'"/>
