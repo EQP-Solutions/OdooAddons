@@ -69,7 +69,7 @@
                             <group>
                                 <field name="backup_type" readonly="state!='draft'" required="True"/>
                                 <field name="destination_path" placeholder="e.g. /path/to/your/backups/folder/"
-                                       readonly="state!='draft'" required="backup_type!='drive'"
+                                       readonly="state!='draft'" required="backup_type in ('local', 'sftp')"
                                        invisible="backup_type=='drive'"/>
                             </group>
 
