@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class ResCompany(models.Model):
@@ -34,8 +34,3 @@ class ResCompany(models.Model):
         string='Additional email addresses for Failure Notifications',
         help="By default, the system sends notifications to the responsible user of the backup record. However, "
              "here you can add additional email addresses for notification if needed.")
-
-    backup_master_password = fields.Char(
-        string='Database Management Master Password',
-        help="This field stores the hash of the Database Master Password upon confirmation and authentication. "
-             "It is utilized by the backup module during the automated backup process execution.")

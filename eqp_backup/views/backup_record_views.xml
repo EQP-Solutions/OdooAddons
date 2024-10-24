@@ -55,7 +55,7 @@
             <field name="arch" type="xml">
                 <form string="Backup Record" delete="false" import="false" export="false">
                     <header>
-                        <button name="validate_db_credentials" type="object" class="btn-primary"
+                        <button name="validate_db" type="object" class="btn-primary"
                                 string="Confirm" invisible="state!='draft'" context="{'confirm': True}"/>
                         <button name="manual_execution" type="object" class="btn-warning"
                                 string="Run BackUpManually" invisible="state!='confirmed'"/>
@@ -104,10 +104,9 @@
                                             string="Update Data Bases List" icon="fa-refresh"/>
                                     <field name="db_names" readonly="1" nolabel="1" class="oe_inline" widget="text"/>
                                 </div>
-                                <field name="master_password" class="password-limited" password="True" readonly="True"/>
                                 <div colspan="2" invisible="state!='draft'">
-                                    <button name="validate_db_credentials" type="object" class="btn-link oe_inline"
-                                            string="Validate Credentials" icon="fa-key" colspan="2"/>
+                                    <button name="validate_db" type="object" class="btn-link oe_inline"
+                                            string="Validate Database" icon="fa-key" colspan="2"/>
                                 </div>
 
                                 <field name="user_id" readonly="state!='draft'"

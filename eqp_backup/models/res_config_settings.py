@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class ResConfigSettings(models.TransientModel):
@@ -24,5 +24,3 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.eqp_backup_success_email_address', readonly=False)
     eqp_backup_failure_email_address = fields.Char(
         related='company_id.eqp_backup_failure_email_address', readonly=False)
-    backup_master_password = fields.Char(
-        related='company_id.backup_master_password', readonly=False)

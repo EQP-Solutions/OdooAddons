@@ -49,21 +49,6 @@
                             </div>
                         </setting>
 
-                        <setting help="Set Database Master Password." id="eqp_backup_password">
-                            <button type="action" name="%(backup_password_assignment_wizard_action)d" icon="fa-lock"
-                                    colspan="2" class="btn-link oe_inline" string="Set Backup Master Password"
-                                    invisible="backup_master_password"/>
-                            <button type="action" name="%(backup_password_assignment_wizard_action)d" icon="fa-lock"
-                                    colspan="2" class="btn-link oe_inline" string="Update Master Password"
-                                    invisible="not backup_master_password"/>
-                            <div class="row mt-2">
-                                <label for="backup_master_password"/>
-                                <field name="backup_master_password" class="master_password" password="True" readonly="True"/>
-                                <div class="text-muted">This is where the Backup Database Password,
-                                    essential for the module's automatic backup execution, will be securely stored.
-                                </div>
-                            </div>
-                        </setting>
                     </block>
                 </app>
             </xpath>

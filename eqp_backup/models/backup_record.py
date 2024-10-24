@@ -30,34 +30,14 @@ import logging
 import tempfile
 import subprocess
 
-from odoo import api, models, fields, _
+from odoo import models, fields, _
 from odoo.service import db
-from odoo.tools import config
-from odoo.exceptions import ValidationError, AccessDenied
+from odoo.exceptions import ValidationError
 from datetime import datetime, timezone
 
 from odoo.tools import find_pg_tool, exec_pg_environ
 
 _logger = logging.getLogger(__name__)
-
-
-def _validate_db_credentials(password):
-    """
-        Validates the given password against the Database Management Master Password.
-
-        Args:
-            password (str): The password to be validated.
-
-        Returns:
-            bool: True if the password is valid.
-
-        Raises:
-            AccessDenied: If the password validation fails.
-        """
-    if password == config.options['admin_passwd']:
-        return True
-    raise AccessDenied('The credential validation has failed. Please update the Database Management Master Password'
-                       ' in the configuration section of this module.')
 
 
 # Overwriting the "db functions" to prevent that list_db=False will block the process
@@ -78,14 +58,11 @@ def dump_db_manifest(cr):
     return manifest
 
 
-def dump_db(db_name, stream, backup_format='zip', password='admin'):
+def dump_db(db_name, stream, backup_format='zip'):
     """Dump database `db` into file-like object `stream` if stream is None
     return a file object with the dump """
 
     _logger.info('DUMP DB: %s format %s', db_name, backup_format)
-
-    # Validate Credentials
-    _validate_db_credentials(password)
 
     cmd = [find_pg_tool('pg_dump'), '--no-owner', db_name]
     env = exec_pg_environ()
@@ -139,8 +116,6 @@ class BackupRecord(models.Model):
 
     db_name = fields.Char(string='Database Name', required=True, tracking=True, help="Data Base name")
     db_names = fields.Text(string='Available Databases', copy=False, readonly=True)
-    master_password = fields.Char(string='Master Password', related="company_id.backup_master_password",
-                                  help="Odoo Instance Master Password")
     frequency = fields.Selection([('years', 'Yearly'),
                                   ('months', 'Monthly'),
                                   ('weeks', 'Weekly'),
@@ -251,7 +226,7 @@ class BackupRecord(models.Model):
             if record.state == 'confirmed':
                 record.write({'state': 'draft', 'db_names': ''})
 
-    def validate_db_credentials(self):
+    def validate_db(self):
         """Validate database credentials and confirm backup record.
 
         Returns:
@@ -262,7 +237,7 @@ class BackupRecord(models.Model):
 
         # Set a Success values by default.
         result_type = 'success'
-        result_msg = 'Database Credential validation executed Successfully.'
+        result_msg = 'Database validation executed Successfully.'
 
         db_name = self.db_name
         # Validates if the database exists
@@ -270,16 +245,6 @@ class BackupRecord(models.Model):
             # Set a warning notification values by default (Display just on a strange case).
             result_type = 'warning'
             result_msg = f'The specified Database Name "{db_name}" does not exist. Please verify and try again.'
-
-        try:
-            # Validates if the Database Backup Password is correct
-            _validate_db_credentials(self.master_password)
-
-        except Exception as e:
-            # Set s danger notification values due to a failed test
-            result_type = 'danger'
-            result_msg = f'The Credential Validation failed. Error: {e}'
-            _logger.error(result_msg)
 
         if result_type == 'success' and self.env.context.get('confirm', False):
 
@@ -375,9 +340,6 @@ class BackupRecord(models.Model):
         destination_path, file_name = server.get_file_path_details(db_name, extension)
         file_path = destination_path + file_name
 
-        # Set the Backup Master Database password
-        master_password = record.master_password
-
         backup_type = server.backup_type
 
         # Local backup
@@ -390,7 +352,7 @@ class BackupRecord(models.Model):
                 # Open with write permissions the file on the file path
                 file = open(file_path, "wb")
                 # Generate backup using the dump_db function
-                dump_db(db_name, file, extension, master_password)
+                dump_db(db_name, file, extension)
                 # Closing the file
                 file.close()
 
@@ -425,7 +387,7 @@ class BackupRecord(models.Model):
             try:
                 sftp, transport = server.establish_sftp_connection()
                 # Generate backup using the dump_db function
-                bu_file_obj = dump_db(db_name, None, extension, master_password)
+                bu_file_obj = dump_db(db_name, None, extension)
                 # Upload the Backup file object to the remote folder
                 sftp.putfo(bu_file_obj, file_path)
 
@@ -468,7 +430,7 @@ class BackupRecord(models.Model):
                 # Get Google Drive Service
                 service = server.provider_authenticate()
                 # Generate backup using the dump_db function
-                bu_file_obj = dump_db(db_name, None, extension, master_password)
+                bu_file_obj = dump_db(db_name, None, extension)
                 # Create a MediaIoBaseUpload object from the io.BufferedRandom object
                 media = server.get_drive_file_media(bu_file_obj, 'application/zip')
                 # Get the current UTC time in ISO format
@@ -525,7 +487,7 @@ class BackupRecord(models.Model):
                 # Get Dropbox Client
                 dbx = server.provider_authenticate()
                 # Generate backup using the dump_db function
-                bu_file_obj = dump_db(db_name, None, extension, master_password)
+                bu_file_obj = dump_db(db_name, None, extension)
                 # Upload the file content to Dropbox
                 file = dbx.files_upload(bu_file_obj.read(), file_path)
 
