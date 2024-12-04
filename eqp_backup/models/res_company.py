@@ -51,25 +51,24 @@ class ResCompany(models.Model):
         for company in self:
             if company.eqp_backup_enable_dropbox:
                 try:
-                    return importlib.import_module("dropbox")
+                    importlib.import_module("dropbox")
                 except ImportError:
-                    raise ValidationError(_(
-                        'The "eqp_automatic_backup" module requires dropbox for automated backups via Dropbox.\n'
-                        "Please install dropbox by running: `sudo pip3 install dropbox`\n"
-                        "(recommended version dropbox>=12.0.2)"
-                    ))
+                    raise ValidationError(
+                        _(
+                            'The "eqp_automatic_backup" module requires dropbox for automated backups via Dropbox.\n'
+                            "Please install dropbox by running: `sudo pip3 install dropbox`\n"
+                            "(recommended version dropbox>=12.0.2)"
+                        )
+                    )
             if company.eqp_backup_enable_drive:
                 try:
-                    return (
-                        importlib.import_module("google.oauth2.service_account"),
-                        importlib.import_module("googleapiclient.discovery"),
-                        importlib.import_module(
-                            "googleapiclient.http.MediaIoBaseUpload"
-                        ),
-                    )
+                    importlib.import_module("google.oauth2.service_account")
+                    importlib.import_module("googleapiclient.discovery")
                 except ImportError:
-                    raise ValidationError(_(
-                        'The "eqp_automatic_backup" module requires googleapiclient package for automated backups via Google Drive.'
-                        "\nPlease install google-api-python-client by running: `sudo pip3 install google-api-python-client`"
-                        "\n(recommended version google-api-python-client>=2.154.0)"
-                    ))
+                    raise ValidationError(
+                        _(
+                            'The "eqp_automatic_backup" module requires googleapiclient package for automated backups via Google Drive.'
+                            "\nPlease install google-api-python-client by running: `sudo pip3 install google-api-python-client`"
+                            "\n(recommended version google-api-python-client>=2.154.0)"
+                        )
+                    )
