@@ -366,6 +366,7 @@ class BackupServer(models.Model):
         Returns:
             object: Service object for the backup provider.
         """
+        self.ensure_one()
         credentials_data = None
         backup_type = self.backup_type
 
