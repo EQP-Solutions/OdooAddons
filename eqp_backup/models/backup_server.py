@@ -38,30 +38,9 @@ try:
 
 except ImportError:
     raise ImportError(
-        'The "eqp_automatic_backup" module requires paramiko for automated backups via SFTP. '
-        'Please install paramiko by running: `sudo pip3 install paramiko`'
-    )
-
-try:
-    from google.oauth2 import service_account
-    from googleapiclient.discovery import build
-    from googleapiclient.http import MediaIoBaseUpload
-
-except ImportError:
-    raise ImportError(
-        'The "eqp_automatic_backup" module requires googleapiclient package for automated backups via Google Drive. '
-        'Please install google-api-python-client by running: `sudo pip3 install google-api-python-client` '
-        '(recommended version google-api-python-client>=1.7.9)'
-    )
-
-try:
-    import dropbox
-
-except ImportError:
-    raise ImportError(
-        'The "eqp_automatic_backup" module requires dropbox for automated backups via Dropbox. '
-        'Please install dropbox by running: `sudo pip3 install dropbox`'
-        '(recommended version dropbox>=11.36.2)'
+        'The "eqp_automatic_backup" module requires paramiko for automated backups via SFTP.\n'
+        'Please install paramiko by running: `sudo pip3 install paramiko`\n'
+        '(recommended version paramiko>=3.5.0)'
     )
 
 # Constants Declaration
@@ -279,6 +258,7 @@ class BackupServer(models.Model):
                 ValidationError: If the credentials are missing or if an error occurs during token generation.
         """
         self.ensure_one()
+
         dropbox_app_key = self.dropbox_app_key
         dropbox_app_secret = self.dropbox_app_secret
         if not dropbox_app_key or not dropbox_app_secret:
@@ -286,6 +266,7 @@ class BackupServer(models.Model):
                                   'set: APP Key, Secret, and Token.')
         else:
             try:
+                import dropbox
                 dbx_auth = dropbox.oauth.DropboxOAuth2FlowNoRedirect(dropbox_app_key, dropbox_app_secret,
                                                                      token_access_type='offline')
                 dbx_auth_url = dbx_auth.start()
@@ -358,6 +339,7 @@ class BackupServer(models.Model):
         Returns:
             MediaIoBaseUpload: Media upload object.
         """
+        from googleapiclient.http import MediaIoBaseUpload
         return MediaIoBaseUpload(f_content, mimetype=m_type, resumable=True)
 
     def provider_authenticate(self):
@@ -400,9 +382,12 @@ class BackupServer(models.Model):
         # Get Service
         try:
             if backup_type == 'drive':
+                from google.oauth2 import service_account
+                from googleapiclient.discovery import build
                 creds = service_account.Credentials.from_service_account_info(credentials_data, scopes=SCOPES)
                 service = build('drive', 'v3', credentials=creds)
             else:
+                import dropbox
                 service = dropbox.Dropbox(app_key=credentials_data[0], app_secret=credentials_data[1],
                                           oauth2_refresh_token=credentials_data[2])
         except Exception as e:

@@ -21,8 +21,6 @@
 #
 ##############################################################################
 
-import dropbox
-
 from odoo import fields, models
 from odoo.exceptions import ValidationError
 
@@ -60,6 +58,7 @@ class BackupDropboxTokenAssignmentWizard(models.TransientModel):
                                   'Token.')
         else:
             try:
+                import dropbox
                 server = self.server_id
                 dropbox_app_key = server.dropbox_app_key
                 dropbox_app_secret = server.dropbox_app_secret
