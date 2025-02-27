@@ -10,6 +10,7 @@
                 <search string="Backup Records">
                     <field name="name"/>
                     <field name="server_id"/>
+                    <field name="type"/>
                     <field name="user_id"/>
                     <field name="frequency"/>
                     <field name="db_name"/>
@@ -24,6 +25,7 @@
                             domain="[('active', '=', False)]"/>
                     <separator/>
                     <group string="Group By">
+                        <filter name="groupby_type" string="Type" context="{'group_by': 'type'}"/>
                         <filter name="groupby_user" string="Responsible" context="{'group_by': 'user_id'}"/>
                         <filter name="groupby_server" string="Server" context="{'group_by': 'server_id'}"/>
                         <filter name="groupby_frequency" string="Frequency" context="{'group_by': 'frequency'}"/>
@@ -39,6 +41,7 @@
             <field name="arch" type="xml">
                 <tree delete="false">
                     <field name="name"/>
+                    <field name="type"/>
                     <field name="server_id"/>
                     <field name="db_name" optional="show"/>
                     <field name="frequency" optional="show"/>
@@ -76,6 +79,7 @@
                             <group>
                                 <field name="server_id" domain="[('state', '=', 'confirmed')]" readonly="state!='draft'"
                                        options="{'no_create': True, 'no_create_edit': True}"/>
+                                <field name="type" readonly="state != 'draft'"/>
                                 <field name="frequency" readonly="state!='draft'"/>
                                 <label for="backup_lifespan_qty" class="oe_inline"/>
                                 <div>
@@ -146,6 +150,7 @@
         </record>
 
         <!-- Actions -->
+
         <!-- Backup Record Action -->
         <record id="action_backup_record" model="ir.actions.act_window">
             <field name="name">Backup Records</field>
@@ -154,6 +159,7 @@
             <field name="view_id" ref="view_backup_record_tree"/>
             <field name="search_view_id" ref="view_backup_record_search"/>
         </record>
+
         <!-- Configuration Action -->
         <record id="action_eqp_backup_configuration" model="ir.actions.act_window">
             <field name="name">Settings</field>
