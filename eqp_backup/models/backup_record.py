@@ -21,6 +21,7 @@
 #
 ##############################################################################
 
+import io
 import os
 import odoo
 import glob
@@ -266,6 +267,22 @@ class BackupRecord(models.Model):
         ondelete="restrict",
         help="Select a Backup server (Only Confirmed Servers can be used).",
     )
+    server_type = fields.Selection(
+        related="server_id.backup_type", string="Server Type"
+    )
+    chunk_size = fields.Integer(
+        string="Chunk Size (MB)",
+        required=True,
+        tracking=True,
+        default=10,
+        help="As the backup size could be very large we have to divide it in chunks: "
+        "A reference basic guideline:\n\n"
+        "Smaller files: For smaller files (up to a few hundred megabytes), a chunk size of 1MB to 5MB can be suitable.\n"
+        "Medium-sized files: For files ranging from a few hundred megabytes to a few gigabytes, a chunk size of 5MB to 10MB is often appropriate.\n"
+        "Large files: For very large files (several gigabytes or more), you may still want to use smaller chunk sizes (e.g., 5MB to 10MB) to ensure smoother handling and better resilience to network issues.\n"
+        "Note: If set to 0 ('zero'), the system will use the default 'files_upload' method (without chunks).",
+    )
+
     cron_id = fields.Many2one(
         "ir.cron",
         string="Scheduled Action",
@@ -675,8 +692,39 @@ class BackupRecord(models.Model):
                 dbx = server.provider_authenticate()
                 # Generate backup using the dump_db function
                 bu_file_obj = self._generate_backup(db_name, None, extension, self.type)
-                # Upload the file content to Dropbox
-                file = dbx.files_upload(bu_file_obj.read(), file_path)
+
+                # Upload the file to Dropbox
+                if record.chunk_size:
+                    import dropbox
+
+                    chunk_size = record.chunk_size * 1024 * 1024  # MB chunk size
+                    with io.BytesIO() as stream:
+                        while True:
+                            chunk = bu_file_obj.read(chunk_size)
+                            if not chunk:
+                                break
+
+                            upload_session_start_result = (
+                                dbx.files_upload_session_start(chunk)
+                            )
+                            cursor = dropbox.files.UploadSessionCursor(
+                                session_id=upload_session_start_result.session_id,
+                                offset=len(chunk),
+                            )
+                            commit = dropbox.files.CommitInfo(path=file_path)
+
+                            while True:
+                                chunk = bu_file_obj.read(chunk_size)
+                                if not chunk:
+                                    dbx.files_upload_session_finish(
+                                        chunk, cursor, commit
+                                    )
+                                    break
+                                dbx.files_upload_session_append_v2(chunk, cursor)
+                                cursor.offset += len(chunk)
+                else:
+                    # Upload the entire file in one request if no chunking is specified
+                    file = dbx.files_upload(bu_file_obj.read(), file_path)
 
                 # Process which deletes old backups
                 if record.backup_lifespan_qty > 0:
@@ -700,7 +748,7 @@ class BackupRecord(models.Model):
                         dbx.files_delete_v2(path=old_backup.path_display)
 
                 result_type = "success"
-                result_msg = f"Dropbox Backup process executed successfully.\nThe file ID is: {file.id}"
+                result_msg = "Dropbox Backup process executed successfully."
                 _logger.info(result_msg)
 
             except Exception as e:

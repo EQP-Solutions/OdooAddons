@@ -79,6 +79,9 @@
                             <group>
                                 <field name="server_id" domain="[('state', '=', 'confirmed')]" readonly="state!='draft'"
                                        options="{'no_create': True, 'no_create_edit': True}"/>
+                                <field name="server_type" invisible="1"/>
+                                <field name="chunk_size" readonly="state!='draft'" required="server_type=='dropbox'"
+                                       invisible="server_type!='dropbox'"/>
                                 <field name="type" readonly="state != 'draft'"/>
                                 <field name="frequency" readonly="state!='draft'"/>
                                 <label for="backup_lifespan_qty" class="oe_inline"/>
