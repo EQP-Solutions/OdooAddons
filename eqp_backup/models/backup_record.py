@@ -35,7 +35,7 @@ from odoo.service import db
 from odoo.exceptions import ValidationError
 from datetime import datetime, timezone
 
-from odoo.tools import find_pg_tool, exec_pg_environ
+from odoo.tools import config, osutil, find_pg_tool, exec_pg_environ
 
 _logger = logging.getLogger(__name__)
 
@@ -61,58 +61,89 @@ def dump_db_manifest(cr):
     return manifest
 
 
-def dump_db(db_name, stream, backup_format="zip"):
-    """Dump database `db` into file-like object `stream` if stream is None
-    return a file object with the dump"""
+def _dump_filestore(db_name, dump_dir):
+    """Copy the filestore to the given dump directory."""
+    filestore = config.filestore(db_name)
+    if os.path.exists(filestore):
+        shutil.copytree(filestore, os.path.join(dump_dir, "filestore"))
 
-    _logger.info("DUMP DB: %s format %s", db_name, backup_format)
 
+def _dump_database(db_name, dump_dir, backup_format):
+    """Dump the database to the given dump directory."""
     cmd = [find_pg_tool("pg_dump"), "--no-owner", db_name]
     env = exec_pg_environ()
 
     if backup_format == "zip":
-        with tempfile.TemporaryDirectory() as dump_dir:
-            filestore = odoo.tools.config.filestore(db_name)
-            if os.path.exists(filestore):
-                shutil.copytree(filestore, os.path.join(dump_dir, "filestore"))
-            with open(os.path.join(dump_dir, "manifest.json"), "w") as fh:
-                db = odoo.sql_db.db_connect(db_name)
-                with db.cursor() as cr:
-                    json.dump(dump_db_manifest(cr), fh, indent=4)
-            cmd.insert(-1, "--file=" + os.path.join(dump_dir, "dump.sql"))
-            subprocess.run(
-                cmd,
-                env=env,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.STDOUT,
-                check=True,
-            )
-            if stream:
-                odoo.tools.osutil.zip_dir(
-                    dump_dir,
-                    stream,
-                    include_dir=False,
-                    fnct_sort=lambda file_name: file_name != "dump.sql",
-                )
-            else:
-                t = tempfile.TemporaryFile()
-                odoo.tools.osutil.zip_dir(
-                    dump_dir,
-                    t,
-                    include_dir=False,
-                    fnct_sort=lambda file_name: file_name != "dump.sql",
-                )
-                t.seek(0)
-                return t
+        dump_file = os.path.join(dump_dir, "dump.sql")
+        cmd.insert(-1, f"--file={dump_file}")
+
+        with open(os.path.join(dump_dir, "manifest.json"), "w") as fh:
+            db = odoo.sql_db.db_connect(db_name)
+            with db.cursor() as cr:
+                json.dump(dump_db_manifest(cr), fh, indent=4)
+
+        subprocess.run(
+            cmd,
+            env=env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT,
+            check=True,
+        )
+
     else:
         cmd.insert(-1, "--format=c")
-        stdout = subprocess.Popen(
+        return subprocess.Popen(
             cmd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE
         ).stdout
-        if stream:
-            shutil.copyfileobj(stdout, stream)
-        else:
-            return stdout
+
+
+def _create_zip(dump_dir, stream=None):
+    """Create a ZIP archive of the given directory and write it to the stream or return a temp file."""
+    if not stream:
+        stream = tempfile.TemporaryFile()
+
+    osutil.zip_dir(
+        dump_dir,
+        stream,
+        include_dir=False,
+        fnct_sort=lambda file_name: file_name != "dump.sql",
+    )
+    stream.seek(0)
+    return stream
+
+
+def dump_filestore(db_name, stream=None, backup_format="zip"):
+    """Dump the database Filestore into a file-like object `stream`."""
+    _logger.info("Backing up Filestore: %s (format: %s)", db_name, backup_format)
+
+    with tempfile.TemporaryDirectory() as dump_dir:
+        _dump_filestore(db_name, dump_dir)
+        return _create_zip(dump_dir, stream)
+
+
+def dump_db(db_name, stream=None, backup_format="zip"):
+    """Dump the database into a file-like object `stream`."""
+    _logger.info("Backing up DB: %s (format: %s)", db_name, backup_format)
+
+    if backup_format == "zip":
+        with tempfile.TemporaryDirectory() as dump_dir:
+            _dump_database(db_name, dump_dir, backup_format)
+            return _create_zip(dump_dir, stream)
+    else:
+        return _dump_database(db_name, None, backup_format)
+
+
+def dump_db_full(db_name, stream=None, backup_format="zip"):
+    """Dump both the database and Filestore into a file-like object `stream`."""
+    _logger.info("Backing up DB & Filestore: %s (format: %s)", db_name, backup_format)
+
+    if backup_format == "zip":
+        with tempfile.TemporaryDirectory() as dump_dir:
+            _dump_filestore(db_name, dump_dir)
+            _dump_database(db_name, dump_dir, backup_format)
+            return _create_zip(dump_dir, stream)
+    else:
+        return _dump_database(db_name, None, backup_format)
 
 
 class BackupRecord(models.Model):
@@ -170,6 +201,17 @@ class BackupRecord(models.Model):
         required=True,
         tracking=True,
         help="Select the frequency at which you would like your backups to be generated.",
+    )
+    type = fields.Selection(
+        [("full", "Full (DB & FS)"), ("db", "Data Base"), ("fs", "File Store")],
+        string="Type",
+        default="full",
+        required=True,
+        tracking=True,
+        help="Select the type of backup to execute:\n"
+        "- Full (DB & FS): Backs up both the database and file store.\n"
+        "- Database Only: Backs up only the database.\n"
+        "- File Store Only: Backs up only the file storage (attachments and other media).",
     )
     backup_lifespan_qty = fields.Integer(
         string="Backup Lifespan qty",
@@ -254,6 +296,18 @@ class BackupRecord(models.Model):
             "The Backup span qty must be either -1 or greater than 1",
         ),
     ]
+
+    # Static Methods
+    @staticmethod
+    def _generate_backup(db_name, file, extension, bu_type):
+        # Determine backup type and generate backup
+        if bu_type == "fs":
+            bu_file = dump_filestore(db_name, file, extension)
+        elif bu_type == "db":
+            bu_file = dump_db(db_name, file, extension)
+        else:
+            bu_file = dump_db_full(db_name, file, extension)
+        return bu_file
 
     def update_cron_state(self, state):
         """Update the state of the associated cron job.
@@ -468,7 +522,7 @@ class BackupRecord(models.Model):
                 # Open with write permissions the file on the file path
                 file = open(file_path, "wb")
                 # Generate backup using the dump_db function
-                dump_db(db_name, file, extension)
+                self._generate_backup(db_name, file, extension, self.type)
                 # Closing the file
                 file.close()
 
@@ -505,7 +559,7 @@ class BackupRecord(models.Model):
             try:
                 sftp, transport = server.establish_sftp_connection()
                 # Generate backup using the dump_db function
-                bu_file_obj = dump_db(db_name, None, extension)
+                bu_file_obj = self._generate_backup(db_name, None, extension, self.type)
                 # Upload the Backup file object to the remote folder
                 sftp.putfo(bu_file_obj, file_path)
 
@@ -555,7 +609,7 @@ class BackupRecord(models.Model):
                 # Get Google Drive Service
                 service = server.provider_authenticate()
                 # Generate backup using the dump_db function
-                bu_file_obj = dump_db(db_name, None, extension)
+                bu_file_obj = self._generate_backup(db_name, None, extension, self.type)
                 # Create a MediaIoBaseUpload object from the io.BufferedRandom object
                 media = server.get_drive_file_media(bu_file_obj, "application/zip")
                 # Get the current UTC time in ISO format
@@ -620,7 +674,7 @@ class BackupRecord(models.Model):
                 # Get Dropbox Client
                 dbx = server.provider_authenticate()
                 # Generate backup using the dump_db function
-                bu_file_obj = dump_db(db_name, None, extension)
+                bu_file_obj = self._generate_backup(db_name, None, extension, self.type)
                 # Upload the file content to Dropbox
                 file = dbx.files_upload(bu_file_obj.read(), file_path)
 
