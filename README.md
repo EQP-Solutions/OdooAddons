@@ -7,9 +7,7 @@ maintained by EQP Solutions.
 <!-- TOC -->
 * [EQP Solutions Odoo Addons](#eqp-solutions-odoo-addons)
   * [Addons](#addons)
-    * [1. Product Certificate Module](#1-product-certificate-module)
-      * [Overview](#overview)
-    * [2. Automatic Backups](#2-automatic-backups)
+    * [1. Automatic Backups](#2-automatic-backups)
       * [Overview](#overview-1)
   * [Documentation](#documentation)
   * [Contacts](#contacts)
@@ -20,15 +18,7 @@ maintained by EQP Solutions.
 
 ## Addons
 
-### 1. Product Certificate Module
-
-#### Overview
-
-The Product Certificate module is a comprehensive solution for managing and tracking product certificates within the
-Odoo ERP system. It provides a robust set of features to streamline the creation, classification, and tracking of
-product certificates, ensuring compliance and organization.
-
-### 2. Automatic Backups
+### 1. Automatic Backups
 
 #### Overview
 

@@ -36,7 +36,8 @@ from odoo.service import db
 from odoo.exceptions import ValidationError
 from datetime import datetime, timezone
 
-from odoo.tools import config, osutil, find_pg_tool, exec_pg_environ
+from odoo.tools import config, osutil
+from odoo.tools.misc import exec_pg_environ, find_pg_tool
 
 _logger = logging.getLogger(__name__)
 
@@ -434,8 +435,7 @@ class BackupRecord(models.Model):
                 "model_id": model_id,
                 "state": "code",
                 "code": f"model._scheduled_backup_process(record_id={self.id})",
-                "numbercall": -1,
-                "doall": False,
+                "priority": 3,
             }
 
             if self.cron_id:

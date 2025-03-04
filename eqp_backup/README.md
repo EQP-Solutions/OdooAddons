@@ -40,7 +40,7 @@ of their dependencies.
 
 ## Credits
 
-Developer: (V17) Esteban Q P , Contact: info@eqpsolutions.com
+Developer: Esteban Quevedo P , Contact: info@eqpsolutions.com
 
 ## License
 

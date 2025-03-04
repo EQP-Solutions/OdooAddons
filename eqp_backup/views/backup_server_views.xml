@@ -31,12 +31,12 @@
             <field name="name">backup.server.tree</field>
             <field name="model">backup.server</field>
             <field name="arch" type="xml">
-                <tree delete="false">
+                <list delete="false">
                     <field name="name"/>
                     <field name="backup_type" optional="show"/>
                     <field name="destination_path" optional="show"/>
                     <field name="state" optional="show"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -143,23 +143,18 @@
                             <page string="Records" name="backup_server_records">
                                 <group>
                                     <field name="record_ids" nolabel="1" colspan="2" options="{'no_create': True}">
-                                        <tree>
+                                        <list>
                                             <field name="name"/>
                                             <field name="db_name"/>
                                             <field name="user_id"/>
                                             <field name="state"/>
-                                        </tree>
+                                        </list>
                                     </field>
                                 </group>
                             </page>
                         </notebook>
                     </sheet>
-                    <div class="o_attachment_preview"/>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids"/>
-                        <field name="activity_ids"/>
-                        <field name="message_ids"/>
-                    </div>
+                    <chatter/>
                 </form>
             </field>
         </record>
@@ -168,7 +163,7 @@
         <record id="action_backup_server" model="ir.actions.act_window">
             <field name="name">Backup Servers</field>
             <field name="res_model">backup.server</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="view_id" ref="view_backup_server_tree"/>
             <field name="search_view_id" ref="view_backup_server_search"/>
         </record>
