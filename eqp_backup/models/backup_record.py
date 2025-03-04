@@ -716,7 +716,7 @@ class BackupRecord(models.Model):
                             while True:
                                 chunk = bu_file_obj.read(chunk_size)
                                 if not chunk:
-                                    dbx.files_upload_session_finish(
+                                    file = dbx.files_upload_session_finish(
                                         chunk, cursor, commit
                                     )
                                     break
@@ -748,7 +748,7 @@ class BackupRecord(models.Model):
                         dbx.files_delete_v2(path=old_backup.path_display)
 
                 result_type = "success"
-                result_msg = "Dropbox Backup process executed successfully."
+                result_msg = f"Dropbox Backup process executed successfully.\nThe file ID is: {file.id}"
                 _logger.info(result_msg)
 
             except Exception as e:
